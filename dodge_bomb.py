@@ -1,7 +1,7 @@
 import random
 import sys
 import pygame as pg
-
+import math
 
 WIDTH, HEIGHT = 1600, 900
 
@@ -14,18 +14,19 @@ delta = {  # 練習３：移動量辞書
 }
 def make_kk(kk_muki,img):#こうかとんの向き
     kk_imgs={
-        (0,0):img,
-        (-5,-5):pg.transform.rotozoom(img,-45,1.0),
-        (0,-5):pg.transform.rotozoom(pg.transform.flip(img,True,False),90,1.0),
-        (5,-5):pg.transform.rotozoom(pg.transform.flip(img,True,False),45,1.0),
-        (5,0):pg.transform.flip(img,True,False),
-        (5,5):pg.transform.rotozoom(pg.transform.flip(img,True,False),-45,1.0),
-        (0,5):pg.transform.rotozoom(pg.transform.flip(img,True,False),-90,1.0),
-        (-5,5):pg.transform.rotozoom(img,45,1.0),
-        (-5,0):img    
+        (0,0):img,#離したとき（左）
+        (-5,-5):pg.transform.rotozoom(img,-45,1.0),#左上
+        (0,-5):pg.transform.rotozoom(pg.transform.flip(img,True,False),90,1.0),#上
+        (5,-5):pg.transform.rotozoom(pg.transform.flip(img,True,False),45,1.0),#右上
+        (5,0):pg.transform.flip(img,True,False),#右
+        (5,5):pg.transform.rotozoom(pg.transform.flip(img,True,False),-45,1.0),#右下
+        (0,5):pg.transform.rotozoom(pg.transform.flip(img,True,False),-90,1.0),#下
+        (-5,5):pg.transform.rotozoom(img,45,1.0),#左下
+        (-5,0):img#左
         }
     return kk_imgs[kk_muki]
 
+    
 
 def check_bound(obj_rct: pg.Rect):
     """
@@ -48,6 +49,8 @@ def main():
     """こうかとん"""
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+
+    kk_naki=pg.image.load("ex02/fig/8.png")
     
     kk_rct = kk_img.get_rect()
     kk_rct.center = (900, 400)  # 練習３：こうかとんの初期座標を設定する
@@ -62,12 +65,19 @@ def main():
 
     clock = pg.time.Clock()
     tmr = 0
+    tmr2 =1.0
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
 
         if kk_rct.colliderect(bd_rct):  # 練習５：ぶつかってたら
+            # while True:
+            #     kk_naki=pg.transform.rotozoom(kk_naki,0,tmr2)
+            #     screen.blit(kk_naki,(WIDTH/2,HEIGHT/2))
+            #     tmr2+=3000
+            #     if tmr2>=30000000:
+            #         break
             print("ゲームオーバー")
             return
 
@@ -96,7 +106,8 @@ def main():
 
         if not tmr>5000:#ばくだんの加速
             vx*=1.001
-            vy*=1.001  
+            vy*=1.001
+        
         screen.blit(bd_img, bd_rct)  # 練習１：Rectを使って試しにblit
         
         pg.display.update()
