@@ -94,7 +94,9 @@ def main():
         if not tate:  # 練習４：縦方向にはみ出たら
             vy *= -1
 
-        
+        if not tmr>5000:#ばくだんの加速
+            vx*=1.001
+            vy*=1.001  
         screen.blit(bd_img, bd_rct)  # 練習１：Rectを使って試しにblit
         
         pg.display.update()
