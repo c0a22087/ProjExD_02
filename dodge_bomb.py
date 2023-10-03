@@ -3,7 +3,7 @@ import sys
 import pygame as pg
 
 
-WIDTH, HEIGHT = 1600*3/4, 900*3/4
+WIDTH, HEIGHT = 1600, 900
 
 
 delta = {  # 練習３：移動量辞書
@@ -12,6 +12,19 @@ delta = {  # 練習３：移動量辞書
     pg.K_LEFT: (-5, 0),
     pg.K_RIGHT: (+5, 0),
 }
+def make_kk(kk_muki,img):#こうかとんの向き
+    kk_imgs={
+        (0,0):img,
+        (-5,-5):pg.transform.rotozoom(img,-45,1.0),
+        (0,-5):pg.transform.rotozoom(pg.transform.flip(img,True,False),90,1.0),
+        (5,-5):pg.transform.rotozoom(pg.transform.flip(img,True,False),45,1.0),
+        (5,0):pg.transform.flip(img,True,False),
+        (5,5):pg.transform.rotozoom(pg.transform.flip(img,True,False),-45,1.0),
+        (0,5):pg.transform.rotozoom(pg.transform.flip(img,True,False),-90,1.0),
+        (-5,5):pg.transform.rotozoom(img,45,1.0),
+        (-5,0):img    
+        }
+    return kk_imgs[kk_muki]
 
 
 def check_bound(obj_rct: pg.Rect):
@@ -35,8 +48,9 @@ def main():
     """こうかとん"""
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+    
     kk_rct = kk_img.get_rect()
-    kk_rct.center = (900*3/4, 400*3/4)  # 練習３：こうかとんの初期座標を設定する
+    kk_rct.center = (900, 400)  # 練習３：こうかとんの初期座標を設定する
     """ばくだん"""
     bd_img = pg.Surface((20, 20))  # 練習１：爆弾Surfaceを作成する
     bd_img.set_colorkey((0, 0, 0))  # 練習１：黒い部分を透明にする
@@ -52,11 +66,10 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
-            
-        if kk_rct.collidedict(bd_rct):
-            print("game over")
-            return
 
+        if kk_rct.colliderect(bd_rct):  # 練習５：ぶつかってたら
+            print("ゲームオーバー")
+            return
 
         screen.blit(bg_img, [0, 0])
 
@@ -67,17 +80,21 @@ def main():
             if key_lst[key]:
                 sum_mv[0] += mv[0]  # 練習３：横方向の合計移動量
                 sum_mv[1] += mv[1]  # 練習３：縦方向の合計移動量
+                
         kk_rct.move_ip(sum_mv[0], sum_mv[1])  # 練習３：移動させる
-        if check_bound(kk_rct)!=(True,True):
+        if check_bound(kk_rct) != (True, True):  # 練習４：はみだし判定
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
-        screen.blit(kk_img, kk_rct)  # 練習３：移動後の座標に表示させる
+         
+        screen.blit(make_kk((sum_mv[0],sum_mv[1]),kk_img), kk_rct)  # 練習３：移動後の座標に表示させる
         """"ばくだん"""
         bd_rct.move_ip(vx, vy)  # 練習２：爆弾を移動させる
-        yoko,tate = check_bound(bd_rct)
-        if not yoko:
-            vx*=-1
-        if not tate:
-            vy*=-1
+        yoko, tate = check_bound(bd_rct)
+        if not yoko:  # 練習４：横方向にはみ出たら
+            vx *= -1
+        if not tate:  # 練習４：縦方向にはみ出たら
+            vy *= -1
+
+        
         screen.blit(bd_img, bd_rct)  # 練習１：Rectを使って試しにblit
         
         pg.display.update()
