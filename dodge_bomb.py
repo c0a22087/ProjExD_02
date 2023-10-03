@@ -63,9 +63,16 @@ def main():
                 sum_mv[0] += mv[0]  # 練習３：横方向の合計移動量
                 sum_mv[1] += mv[1]  # 練習３：縦方向の合計移動量
         kk_rct.move_ip(sum_mv[0], sum_mv[1])  # 練習３：移動させる
+        if check_bound(kk_rct)!=(True,True):
+            kk_rct.move_ip(-sum_mv[0], -sum_mv[1])
         screen.blit(kk_img, kk_rct)  # 練習３：移動後の座標に表示させる
         """"ばくだん"""
         bd_rct.move_ip(vx, vy)  # 練習２：爆弾を移動させる
+        yoko,tate = check_bound(bd_rct)
+        if not yoko:
+            vx*=-1
+        if not tate:
+            vy*=-1
         screen.blit(bd_img, bd_rct)  # 練習１：Rectを使って試しにblit
         
         pg.display.update()
